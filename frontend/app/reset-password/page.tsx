@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Droplet, ArrowLeft, Lock, Eye, EyeOff } from "lucide-react"
@@ -11,7 +11,7 @@ import { Spinner } from "@/components/ui/spinner"
 import { useAuth } from "@/context/auth.context"
 import { AuthSidePanel } from "@/components/auth/auth-side-panel"
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const { resetPassword, isLoading } = useAuth()
   const searchParams = useSearchParams()
   const token = searchParams.get("token") || ""
@@ -157,5 +157,17 @@ export default function ResetPasswordPage() {
 
       <AuthSidePanel variant="reset" />
     </div>
+  )
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner />
+      </div>
+    }>
+      <ResetPasswordForm />
+    </Suspense>
   )
 }
