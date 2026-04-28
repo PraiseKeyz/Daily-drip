@@ -1,0 +1,26 @@
+import { NestFactory } from '@nestjs/core';
+import { Logger } from 'nestjs-pino';
+import { VersioningType } from '@nestjs/common';
+import { AppModule } from './app.module';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(Logger));
+
+  app.setGlobalPrefix('api');
+
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
+
+  app.enableCors();
+
+  app.useGlobalInterceptors(new ResponseInterceptor());
+
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
+  console.log(`🚀 Application is running on: http://localhost:${port}/api/v1`);
+}
+bootstrap();
